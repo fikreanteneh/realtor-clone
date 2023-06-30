@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import AuthBackground from '../assets/images/AuthBackground.png'
 import { Link, useNavigate } from 'react-router-dom'
 import { FcGoogle } from 'react-icons/fc'
@@ -10,7 +10,9 @@ export const Signin = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { currentUser } = useSelector(state => state.auth)
-    if (currentUser) navigate('/')
+    useEffect(() => {
+        if (currentUser) navigate('/profile')
+    }, [currentUser])
 
     const [formData, setFormData] = useState({email: "", password: ""})
     const [showPassword, setShowPassword] = useState(false)
@@ -46,7 +48,7 @@ export const Signin = () => {
                     <div>
                         <p className='text-center font-semibold'>OR</p>
                     </div>
-                    <button className='rounded w-full bg-red-600 text-white py-3 px-3 my-2 hover:bg-red-700 flex justify-center items-center' onClick={handleSubmit(e, "google")}><FcGoogle className='bg-white text-2xl rounded-full mr-2'/>Countinue with Google</button>
+                    <button className='rounded w-full bg-red-600 text-white py-3 px-3 my-2 hover:bg-red-700 flex justify-center items-center' type="submit" onClick={(e) => handleSubmit(e, "google")}><FcGoogle className='bg-white text-2xl rounded-full mr-2'/>Countinue with Google</button>
 
                 </form>
 

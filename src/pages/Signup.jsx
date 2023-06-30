@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import AuthBackground from '../assets/images/AuthBackground.png'
 import { Link, useNavigate } from 'react-router-dom'
 import { FcGoogle } from 'react-icons/fc'
@@ -9,7 +9,9 @@ export const Signup = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const currentUser = useSelector(state => state.auth.currentUser)
-    if (currentUser) navigate('/')
+    useEffect(() => {
+        if (currentUser) navigate('/profile')
+    }, [currentUser])
 
 
     const [formData, setFormData] = useState({fullName: "", email: "", password: ""})

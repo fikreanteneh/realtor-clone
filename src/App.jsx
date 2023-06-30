@@ -10,18 +10,24 @@ import { useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './config/firebase';
 import { useDispatch } from 'react-redux';
-import { setCurrentUser } from './redux/auth';
+import { setCurrentUser, listenForAuthChanges } from './redux/auth';
 
 
 
 
 export const Root = () => {
   const dispatch = useDispatch()
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     console.log("-------------------------",user)
+  //     if (user) dispatch(setCurrentUser({uid: user.uid, email: user.email, photoURL: user.photoURL, displayName: user.displayName}))
+  //     else dispatch(setCurrentUser({}))
+  //   })
+  // })
+
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      dispatch(setCurrentUser(user))
-    })
-  })
+    dispatch(listenForAuthChanges());
+  }, [dispatch]);
 
   return (
       <div className='main'>
@@ -29,7 +35,6 @@ export const Root = () => {
           <main>
               <Outlet />
           </main>
-
       </div>
 
   )
@@ -46,8 +51,6 @@ const router = createBrowserRouter(
         <Route path='signup' element={<Signup />} />
         <Route path='forgotpassword' element={<ForgotPassword />} />
       </Route>
-      
-
     </>
   )
 )

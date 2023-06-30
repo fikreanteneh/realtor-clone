@@ -1,19 +1,26 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { auth, db } from "../config/firebase";
-import { signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, sendPasswordResetEmail, onAuthStateChanged} from "firebase/auth";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+// import { useDispatch } from "react-redux";
+
+// const dispatch = useDispatch();
 
 const authSlice = createSlice({
     name: 'auth',
     
-    initialState: {currentUser: null},
+    initialState: {
+        currentUser: null
+    },
 
     reducers: {
         signinWithEmail: async (state, action) => {
             try{
+                
                 const {email, password} = action.payload
                 const userCred = await signInWithEmailAndPassword(auth, email, password);
-                state.currentUser = userCred.user;
+                console.log("+++++++++++++++++++++++++++++",userCred.user)
+                // state.currentUser = setCurrentUser(userCred.user);
             }catch(error){
                 console.log(error)
             }
@@ -26,9 +33,8 @@ const authSlice = createSlice({
             }catch(error){
                 console.log(error)
             }
-          
-            
         },
+
 
         signup: async (state, action) => {
             try{
@@ -41,7 +47,7 @@ const authSlice = createSlice({
                     email: email,
                     createdAt: serverTimestamp(),
                 });
-                // state.currentUser = newUser.user;
+                // state.currentUser = setCurrentUser(newUser.user);
             }catch(error){
                 console.log(error)
             }
@@ -51,14 +57,39 @@ const authSlice = createSlice({
             await signOut(auth);
             state.currentUser = null;
         },
+
+        resetPassword: async (state, action) => {
+            try{
+                const {email} = action.payload
+                await sendPasswordResetEmail(auth, email)
+            }catch(error){
+                console.log(error)
+            }
+        },
+
+
         setCurrentUser: (state, action) => {
-            state.currentUser = action.payload;
+            if (!action.payload) {
+                state.currentUser = null;
+                return;
+            }
+            const {displayName, email, uid, photoURL} = action.payload;
+            state.currentUser = {displayName: displayName, email:email, uid: uid, photoURL:photoURL};
         }
         
     }
 })
 
 
+export const listenForAuthChanges = () => (dispatch) => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        dispatch(setCurrentUser(user));
+      } else {
+        dispatch(setCurrentUser(null));
+      }
+    });
+  };
 
-export const {signinWithEmail, signinWithGoogle, signup, signout, setCurrentUser} = authSlice.actions;
+export const {signinWithEmail, signinWithGoogle, signup, signout, setCurrentUser, resetPassword} = authSlice.actions;
 export default authSlice.reducer;
