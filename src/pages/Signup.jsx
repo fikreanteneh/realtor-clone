@@ -1,21 +1,19 @@
 import { useState, useEffect } from 'react'
 import AuthBackground from '../assets/images/AuthBackground.png'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link,  } from 'react-router-dom'
 import { FcGoogle } from 'react-icons/fc'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch,  } from 'react-redux'
 import { signinWithGoogle, signup } from '../redux/auth'
 
 export const Signup = () => {
-    const navigate = useNavigate()
-    const dispatch = useDispatch()
-    const currentUser = useSelector(state => state.auth.currentUser)
     useEffect(() => {
-        if (currentUser) navigate('/profile')
-    }, [currentUser])
-
+        document.title = "Realtor Clone | Sign Up"
+    }, [])
+    
+    const dispatch = useDispatch()
 
     const [formData, setFormData] = useState({fullName: "", email: "", password: ""})
-    const [showPassword, setShowPassword] = useState(false)
+    let showPassword = false;
 
     const handleChange = (e) =>{
         const {id, value} = e.target
